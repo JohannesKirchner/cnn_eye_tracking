@@ -1,0 +1,11 @@
+.idea/
+.DS_Store
+
+# results folder with figures and videos
+results/
+
+# notebooks folder with jupyter scripts
+notebooks/
+
+# artificial data as that would require too much space
+data/artificial_MRI_data.h5
