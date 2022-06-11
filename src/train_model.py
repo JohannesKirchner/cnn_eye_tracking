@@ -3,14 +3,14 @@ from architecture import cnn_model
 import visualise
 
 
-def train_model(epochs=10, plot=False):
+def train_model(epochs=15, plot=False):
     """
     Training of the CNN model with artificial MRI data. The complete model including trained weights is saved.
 
     Parameters
     ----------
     epochs : int, optional
-        Number of epochs over which the model is fitted (default is 10).
+        Number of epochs over which the model is fitted (default is 15).
     plot: bool, optional
         Choose whether to plot and save the model loss over epochs and the model performance on the artificial test
         set (default is False).
@@ -38,9 +38,9 @@ def train_model(epochs=10, plot=False):
         fig.savefig('../results/model_loss_over_epochs.png')
 
         # Print & save model performance on the test set
-        fig = visualise.test_performance(X_test, y_test, model)
-        fig.savefig('../results/test_performance.png')
+        fig = visualise.test_set_performance(X_test, y_test, model)
+        fig.savefig('../results/test_set_performance.png')
 
 
 if __name__ == "__main__":
-    train_model(10, plot=True)
+    train_model(15, plot=True)

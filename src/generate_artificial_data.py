@@ -67,7 +67,7 @@ def artificial_mri_image(center_x, center_y, angle, radius_std=0.2, intensity_st
     # Sclera parameter
     x0_scl = np.array([[center_x], [center_y]])
     rad_scl = np.array((13.3, 12.2)) + np.random.normal(0, radius_std, 2)
-    rot_scl = rot_2d(angle)
+    rot_scl = rot_2d(np.random.normal(angle, angle_std))
 
     # Cornea parameter
     rot_crn = rot_2d(np.random.normal(angle, angle_std))
@@ -77,7 +77,7 @@ def artificial_mri_image(center_x, center_y, angle, radius_std=0.2, intensity_st
 
     # Lens parameter
     rad_lns = np.array((6.3, 5.3)) + np.random.normal(0, radius_std, 2)
-    rot_lns = rot_2d(np.random.normal(angle, angle_std))
+    rot_lns = rot_2d(angle)
     lam = 1 / np.linalg.norm(np.diag(1.0 / rad_scl) @ rot_scl.T @ rot_lns @ np.array([[0], [-1]]))
     x0_lns = x0_scl + lam * rot_lns @ np.array([[0], [-1]])
 
