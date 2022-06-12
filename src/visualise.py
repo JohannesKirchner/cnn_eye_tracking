@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import imageio
 from utils import rot_2d
 
 
@@ -95,9 +96,9 @@ def test_set_performance(X, y_true, model):
     axs[1, 2].set_ylabel('Count [ ]')
     axs[1, 2].set_xlim(-8, 8)
 
-    # Subplot 1-3: Scatterplot of true vs predicted eye kinematics
+    # Subplot 1-3: Scatter plot of true vs predicted eye kinematics
     for i in range(3):
-        axs[0, i].scatter(y_pred[:, i], y_true[:, i], s=4, color='gray')
+        axs[0, i].scatter(y_true[:, i], y_pred[:, i], s=4, color='gray')
         axs[0, i].plot(axs[0, i].get_xlim(), axs[0, i].get_xlim(), color='black')
 
     # Subplot 4-6: Histogram of difference between true and predicted eye kinematics plus mean and std
@@ -119,10 +120,53 @@ def test_set_performance(X, y_true, model):
     return fig
 
 
-def mr_snapshot(axs, t, X, y):
-    mr_data(X, y, ax=axs[0])
-    axs[1].scatter(t, y[2])
+def mr_snapshot_and_time_series(frame, t, X, y, ax1, ax2):
+    """
+    Plots the MRI data of the current frame along with the time series of eyeball orientation up onto that particular
+    frame.
+
+    Parameters
+    ----------
+    frame: int
+        current frame out of the n frames available
+    t : (n, ) numpy array
+        time array for all frames
+    X : (n, 43, 43) numpy array
+        dataset of n MR images of human eyeballs
+    y : (n, 3) numpy array
+        containing true column & row of eyeball center and eyeball orientation of each image
+    """
+
+    ax1.clear()
+    ax2.clear()
+
+    ax2.set_xlim(np.min(t), np.max(t))
+    ax2.set_ylim(-15, 10)
+
+    mr_data(X[frame, :, :], y[frame, :], ax=ax1)
+    ax2.plot(t[0:(frame + 1)], y[0:frame + 1, 2], c='r')
+    ax2.scatter(t[frame], y[frame, 2], c='r')
+
+    # draw the canvas, cache the renderer
+    fig = plt.gcf()
+    fig.canvas.draw()
+    image = np.frombuffer(fig.canvas.tostring_rgb(), dtype='uint8')
+    image = image.reshape(fig.canvas.get_width_height()[::-1] + (3,))
+
+    return image
 
 
-def create_gif():
-    pass
+def create_gif(X, y):
+    idx = np.arange(0, 300)
+
+    t = idx * 0.055
+    X = X[idx, :, :]
+    y = y[idx, :]
+
+    fig = plt.figure(figsize=(12, 3))
+    ax1 = fig.add_axes([0, 0, 0.25, 1])
+    ax2 = fig.add_axes([0.32, 0.02, 0.66, 0.96])
+
+    imageio.mimsave('../results/eye_movement.gif',
+                    [mr_snapshot_and_time_series(i, t, X, y, ax1, ax2) for i in range(len(idx))],
+                    fps=18)

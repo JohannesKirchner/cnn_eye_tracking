@@ -3,7 +3,7 @@ from architecture import cnn_model
 import visualise
 
 
-def train_model(epochs=15, plot=False):
+def train_model(epochs=10, plot=False):
     """
     Training of the CNN model with artificial MRI data. The complete model including trained weights is saved.
 
