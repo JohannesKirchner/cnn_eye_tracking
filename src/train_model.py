@@ -35,11 +35,11 @@ def train_model(epochs=10, plot=False):
     if plot:
         # Print & save loss function over epochs
         fig = visualise.model_loss(history)
-        fig.savefig('../results/model_loss_over_epochs.png')
+        fig.savefig('../results/model_loss_over_epochs.png', bbox_inches='tight')
 
         # Print & save model performance on the test set
         fig = visualise.test_set_performance(X_test, y_test, model)
-        fig.savefig('../results/test_set_performance.png')
+        fig.savefig('../results/test_set_performance.png', bbox_inches='tight')
 
 
 if __name__ == "__main__":

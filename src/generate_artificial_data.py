@@ -5,15 +5,15 @@ from utils import rot_2d, in_ellipse
 from sklearn.model_selection import train_test_split
 
 
-def generate_artificial_data(n=20000):
+def generate_artificial_data(n=40000):
     """
     Generates a set of n artificial MRI images with randomised eye position, rotation, radii etc.
     """
 
     # Parameter determining spread in eyeball radii, image intensity and relative angle between cornea & lens
-    radius_std = 0.1
+    radius_std = 0.3
     intensity_std = 0.1
-    angle_std = 0.2
+    angle_std = 2.0
 
     # Create artificial MRI images of human eyes with randomised location and orientation
     X = np.zeros((n, 43, 43))

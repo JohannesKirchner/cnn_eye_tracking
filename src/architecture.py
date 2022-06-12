@@ -11,19 +11,19 @@ def cnn_model():
     inputs = keras.Input(shape=(43, 43, 1))
 
     # First Convolution Layer Block
-    conv1 = keras.layers.Conv2D(16, (4, 4), padding='same')(inputs)
+    conv1 = keras.layers.Conv2D(16, (5, 5), padding='same')(inputs)
     conv1 = keras.layers.BatchNormalization()(conv1)
     conv1 = keras.layers.Activation('relu')(conv1)
     conv1 = keras.layers.MaxPooling2D(pool_size=(2, 2))(conv1)
 
     # Second Convolution Layer Block
-    conv2 = keras.layers.Conv2D(32, (4, 4), padding='same')(conv1)
+    conv2 = keras.layers.Conv2D(32, (3, 3), padding='same')(conv1)
     conv2 = keras.layers.BatchNormalization()(conv2)
     conv2 = keras.layers.Activation('relu')(conv2)
     conv2 = keras.layers.MaxPooling2D(pool_size=(2, 2))(conv2)
 
     # Third Convolution Layer Block
-    conv3 = keras.layers.Conv2D(64, (4, 4), padding='same')(conv2)
+    conv3 = keras.layers.Conv2D(64, (3, 3), padding='same')(conv2)
     conv3 = keras.layers.BatchNormalization()(conv3)
     conv3 = keras.layers.Activation('relu')(conv3)
     conv3 = keras.layers.MaxPooling2D(pool_size=(2, 2))(conv3)
