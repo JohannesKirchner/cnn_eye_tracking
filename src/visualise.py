@@ -4,7 +4,7 @@ import imageio
 from utils import rot_2d
 
 
-def mr_data(X, y, ax=None):
+def mr_data(X, y=None, ax=None):
     """
     populates axis with an MR image given by X and draws eyeball center and the line of sight based on y.
 
@@ -12,7 +12,7 @@ def mr_data(X, y, ax=None):
     ----------
     X : (43, 43) numpy array
         MR image with human eyeball
-    y : (3,) numpy array
+    y : (3,) numpy array, optional
         containing column of eyeball center, row of eyeball center and eyeball orientation in this particular order
     ax: plt.axis handle, optional
         axis on which the image is plotted, default is current axis
@@ -22,15 +22,19 @@ def mr_data(X, y, ax=None):
     if ax is None:
         ax = plt.gca()
 
-    # Calculate the line of sight based on eyeball center and orientation
-    x0_lns = np.array([[y[0]], [y[1]]]) + rot_2d(y[2]) @ np.array([[0], [-1]])
-    m = (x0_lns[0] - y[0]) / (x0_lns[1] - y[1])
-    b0 = y[0] - m * y[1]
-
-    # Plot MR image and eyeball center and line of sight on top of that
+    # Plot MR image
     ax.imshow(X, cmap='gray', vmin=0, vmax=1.5)
-    ax.scatter(y[0], y[1], s=150, c='k', marker='+', zorder=2)
-    ax.plot(m * [0, X.shape[0]-1] + b0, [0, X.shape[1]-1], 'r', linewidth=1.5, zorder=1)
+
+    # If eyeball kinematics are given, calculate line of sight and plot on top of MR data
+    if y is not None:
+        # Calculate the line of sight based on eyeball center and orientation
+        x0_lns = np.array([[y[0]], [y[1]]]) + rot_2d(y[2]) @ np.array([[0], [-1]])
+        m = (x0_lns[0] - y[0]) / (x0_lns[1] - y[1])
+        b0 = y[0] - m * y[1]
+
+        # Plot eyeball center and line of sight
+        ax.scatter(y[0], y[1], s=150, c='k', marker='+', zorder=2)
+        ax.plot(m * [0, X.shape[0]-1] + b0, [0, X.shape[1]-1], 'r', linewidth=1.5, zorder=1)
 
 
 def model_loss(history):
@@ -120,7 +124,7 @@ def test_set_performance(X, y_true, model):
     return fig
 
 
-def mr_snapshot_and_time_series(frame, t, X, y, ax1, ax2):
+def mr_snapshot_and_time_series(frame, t, X, y, axs):
     """
     Plots the MRI data of the current frame along with the time series of eyeball orientation up onto that particular
     frame.
@@ -134,18 +138,26 @@ def mr_snapshot_and_time_series(frame, t, X, y, ax1, ax2):
     X : (n, 43, 43) numpy array
         dataset of n MR images of human eyeballs
     y : (n, 3) numpy array
-        containing true column & row of eyeball center and eyeball orientation of each image
+        containing column & row of eyeball center and eyeball orientation of each image
+    axs : (2,) axis handle
     """
 
-    ax1.clear()
-    ax2.clear()
+    # Clear previous frame
+    axs[0].clear()
+    axs[1].clear()
 
-    ax2.set_xlim(np.min(t), np.max(t))
-    ax2.set_ylim(-15, 10)
+    # Keep axes  constant across all frames
+    axs[0].get_xaxis().set_visible(False)
+    axs[0].get_yaxis().set_visible(False)
+    axs[1].set_xlim(np.min(t), np.max(t))
+    axs[1].set_ylim(-15, 10)
+    axs[1].set_xlabel('Time [s]', fontsize=12)
+    axs[1].set_ylabel('Gaze Angle [°]', fontsize=12)
 
-    mr_data(X[frame, :, :], y[frame, :], ax=ax1)
-    ax2.plot(t[0:(frame + 1)], y[0:frame + 1, 2], c='r')
-    ax2.scatter(t[frame], y[frame, 2], c='r')
+    # Plot MR data and time series
+    mr_data(X[frame, :, :], y[frame, :], ax=axs[0])
+    axs[1].plot(t[0:(frame + 1)], y[0:frame + 1, 2], c='r')
+    axs[1].scatter(t[frame], y[frame, 2], c='r')
 
     # draw the canvas, cache the renderer
     fig = plt.gcf()
@@ -157,16 +169,29 @@ def mr_snapshot_and_time_series(frame, t, X, y, ax1, ax2):
 
 
 def create_gif(X, y):
-    idx = np.arange(0, 300)
+    """
+    Create a gif which displays the MRI data in X along with eyeball kinematics estimation given by y, side-by-side
+    with the time series of the gaze angle
 
+    X : (n, 43, 43) numpy array
+        dataset of n MR images of human eyeballs
+    y : (n, 3) numpy array
+        containing column & row of eyeball center and eyeball orientation of each image
+    """
+
+    # pick the frame range for the gif
+    idx = np.arange(0, 100)
     t = idx * 0.055
     X = X[idx, :, :]
     y = y[idx, :]
 
+    # create figure and axes handle
     fig = plt.figure(figsize=(12, 3))
     ax1 = fig.add_axes([0, 0, 0.25, 1])
-    ax2 = fig.add_axes([0.32, 0.02, 0.66, 0.96])
+    ax2 = fig.add_axes([0.34, 0.19, 0.64, 0.66])
+    axs = [ax1, ax2]
 
+    # create gif py plotting frame-by-frame
     imageio.mimsave('../results/eye_movement.gif',
-                    [mr_snapshot_and_time_series(i, t, X, y, ax1, ax2) for i in range(len(idx))],
+                    [mr_snapshot_and_time_series(i, t, X, y, axs) for i in range(len(idx))],
                     fps=18)
