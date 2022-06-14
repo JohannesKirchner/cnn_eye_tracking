@@ -180,7 +180,7 @@ def create_gif(X, y):
     """
 
     # pick the frame range for the gif
-    idx = np.arange(0, 100)
+    idx = np.arange(0, 500)
     t = idx * 0.055
     X = X[idx, :, :]
     y = y[idx, :]

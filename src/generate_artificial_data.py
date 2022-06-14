@@ -19,6 +19,8 @@ def generate_artificial_data(n=40000):
     X = np.zeros((n, 43, 43))
     y = np.zeros((n, 3))
     for i in range(n):
+        if i % 100 == 0:
+            print('{}/{}'.format((i // 100) + 1, (n // 100)))
         y[i, 0] = 21 + 6 * (np.random.rand() - 0.5)
         y[i, 1] = 21 + 6 * (np.random.rand() - 0.5)
         y[i, 2] = 0 + 40 * (np.random.rand() - 0.5)
