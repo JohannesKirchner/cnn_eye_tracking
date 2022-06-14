@@ -43,4 +43,4 @@ def train_model(epochs=10, plot=False):
 
 
 if __name__ == "__main__":
-    train_model(15, plot=True)
+    train_model(30, plot=True)
