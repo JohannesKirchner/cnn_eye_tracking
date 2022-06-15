@@ -23,7 +23,7 @@ Each convolution consists of a 2D Convolution with same padding, Batch Normaliza
 Max-Pooling layer. Inputs are (43,43) grayscale images and outputs are eyeball center coordinates $(x_0, y_0)$, as well 
 as the gaze angle $\alpha$.
 
-![](results/network_architecture.png)
+![](results/network_architecture.svg)
 
 ## Performance on artificial test data
 To estimate the performance of the CNN model, predicted and ground truth output values are compared for a test set of 

@@ -1,9 +1,6 @@
 .idea/
 .DS_Store
 
-# results folder with figures and videos
-results/
-
 # notebooks folder with jupyter scripts
 notebooks/
 
